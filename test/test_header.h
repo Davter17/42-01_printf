@@ -1,24 +1,29 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstlast.c                                       :+:      :+:    :+:   */
+/*   test_header.h                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mpico-bu <mpico-bu@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/01/14 18:01:55 by mpico-bu          #+#    #+#             */
-/*   Updated: 2025/01/15 16:23:57 by mpico-bu         ###   ########.fr       */
+/*   Created: 2025/01/15 10:00:00 by mpico-bu          #+#    #+#             */
+/*   Updated: 2025/01/15 10:00:00 by mpico-bu         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef TEST_HEADER_H
+# define TEST_HEADER_H
 
-// Returns the last node of the list.
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <unistd.h>
+# include <sys/wait.h>
+# include "ft_printf.h"
 
-t_list	*ft_lstlast(t_list *lst)
-{
-	if (!lst)
-		return (NULL);
-	while (lst->next != NULL)
-		lst = lst->next;
-	return (lst);
-}
+extern int	g_pass;
+extern int	g_fail;
+
+int		check(int ok, const char *name);
+void	capture_ft(char *buf, int size, void (*f)(void *), void *a);
+
+#endif

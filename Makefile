@@ -12,40 +12,57 @@
 
 NAME = libftprintf.a
 
-SRCS = ft_printf.c ft_printf_utils.c ft_printf_utils2.c
-OBJS = $(SRCS:.c=.o)
+SRCS_DIR = src
+OBJ_DIR = .obj
+INC_DIR = inc
 
-CFLAGS = -Wall -Werror -Wextra
+LIBFT_URL = https://github.com/Davter17/42-00_Libft.git
+LIBFT_DIR = .deps/libft
+LIBFT_INC = $(LIBFT_DIR)/inc
+LIBFT_LIB = $(LIBFT_DIR)/libft.a
+
+SRCS = $(SRCS_DIR)/ft_printf.c $(SRCS_DIR)/ft_printf_utils.c $(SRCS_DIR)/ft_printf_utils2.c
+
+OBJS = $(patsubst $(SRCS_DIR)/%.c,$(OBJ_DIR)/%.o,$(SRCS))
+
 CC = cc
+CFLAGS = -Wall -Wextra -Werror -I$(INC_DIR) -I$(LIBFT_INC)
+AR = ar rcs
 
-LIBFT_DIR = libft
-LIBFT = $(LIBFT_DIR)/libft.a
-INCLUDES = -Ilibft
+all: $(LIBFT_LIB) $(NAME)
 
-.PHONY: all clean fclean re libft_clean libft_fclean
+$(OBJ_DIR)/%.o: $(SRCS_DIR)/%.c | $(OBJ_DIR)
+	@$(CC) $(CFLAGS) -c $< -o $@
 
-all: $(LIBFT) $(NAME)
+$(OBJ_DIR):
+	@printf "  \033[33m⚙\033[0m  Compiling %d files...\n" $(words $(OBJS))
+	@mkdir -p $(OBJ_DIR)
+
+$(LIBFT_LIB):
+	@if [ ! -d "$(LIBFT_DIR)" ]; then \
+		printf "  \033[33m⚙\033[0m  Cloning libft...\n"; \
+		git clone $(LIBFT_URL) $(LIBFT_DIR) > /dev/null 2>&1; \
+	fi
+	@$(MAKE) --no-print-directory -C $(LIBFT_DIR)
 
 $(NAME): $(OBJS)
-	cp $(LIBFT) $(NAME)
-	ar rcs $(NAME) $(OBJS)
+	@printf "  \033[32m✓\033[0m Compiled %d files → $(NAME)\n" $(words $(OBJS))
+	@cp $(LIBFT_LIB) $(NAME)
+	@$(AR) $(NAME) $(OBJS)
 
-$(LIBFT):
-	$(MAKE) -C $(LIBFT_DIR)
+clean:
+	@printf "  \033[31m✗\033[0m  Removing object files...\n"
+	@rm -rf $(OBJ_DIR)
 
-clean: libft_clean
-	rm -f $(OBJS)
-
-fclean: clean libft_fclean
-	rm -f $(NAME)
+fclean: clean
+	@printf "  \033[31m✗\033[0m  Removing $(NAME)...\n"
+	@rm -f $(NAME)
+	@printf "  \033[31m✗\033[0m  Removing dependencies...\n"
+	@rm -rf .deps
 
 re: fclean all
 
-libft_clean:
-	$(MAKE) -C $(LIBFT_DIR) clean
+test: all
+	@bash test/run_tests.sh
 
-libft_fclean:
-	$(MAKE) -C $(LIBFT_DIR) fclean
-
-%.o: %.c
-	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+.PHONY: all clean fclean re test

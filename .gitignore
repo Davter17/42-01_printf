@@ -1,0 +1,11 @@
+.obj/
+test/test_percent
+test/test_char
+test/test_str
+test/test_int
+test/test_unsigned
+test/test_hex
+test/test_ptr
+test/test_misc
+.deps/
+libftprintf.a
